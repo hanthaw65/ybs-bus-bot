@@ -30,7 +30,16 @@ for (const file of fs.readdirSync(repoDir).filter((f) => f.startsWith('ybs_') &&
     const key = `${mm}\0${en}`;
     if (!idx.has(key)) idx.set(key, { mm, en, routes: {} });
     const entry = idx.get(key);
-    if (!entry.routes[line]) entry.routes[line] = { line, line_name: lineName, idx: s.index };
+    // Key by line + line_name (not line alone): variants share a bus_line,
+    // and a stop can occur MULTIPLE times on one route (out-and-back files
+    // pass the same stop twice, e.g. route 30 passes လှည်းတန်း at 47 and 78).
+    // Keep `idx` = first occurrence for backward compat, plus `idxs` = all.
+    const rkey = `${line}\0${lineName}`;
+    if (!entry.routes[rkey]) {
+      entry.routes[rkey] = { line, line_name: lineName, idx: s.index, idxs: [s.index] };
+    } else if (!entry.routes[rkey].idxs.includes(s.index)) {
+      entry.routes[rkey].idxs.push(s.index);
+    }
   }
 }
 const stops = [...idx.values()].map((e) => ({ ...e, routes: Object.values(e.routes).sort((a, b) => a.line.localeCompare(b.line)) }));
