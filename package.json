@@ -1,0 +1,1 @@
+{"description":"Telegram bot for Yangon YBS bus routes and stops (Burmese UI). Webhook on Netlify Functions, static data from hidecard/YBS-Bus-Data.","engines":{"node":">=18"},"name":"ybs-bus-bot","private":true,"scripts":{"test":"node scripts/test-local.js"},"version":"1.0.0"}
