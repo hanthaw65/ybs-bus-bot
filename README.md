@@ -28,19 +28,23 @@ Regenerate the bundled index after upstream updates:
 node scripts/generate-index.js
 ```
 
-## Deploy
+## Deploy — Cloudflare Workers (current)
 
 1. Create a bot with [@BotFather](https://t.me/BotFather) → `/newbot`, keep the token.
-2. Push this repo to GitHub, create a Netlify site from it.
-3. Netlify → Site settings → Environment variables → add
-   `TELEGRAM_BOT_TOKEN` = the BotFather token (never in chat or code).
-4. Deploy, then set the webhook (replace `TOKEN` and `SITE`):
+2. Cloudflare dashboard → Workers & Pages → Create Worker from this GitHub
+   repo (branch `main`, `wrangler.toml` at the root).
+3. Worker Settings → Variables → add secret `TELEGRAM_BOT_TOKEN`.
+4. Open `https://<worker>.workers.dev/setup` once — it sets the webhook to
+   the Worker itself (calling Telegram from Cloudflare's IP) and reports
+   the result. Test in Telegram: `/start`, `100`, `ဆူးလေ`.
 
-```
-https://api.telegram.org/botTOKEN/setWebhook?url=https://SITE.netlify.app/.netlify/functions/telegram
-```
+## Deploy — Netlify (fallback, kept)
 
-5. Test in Telegram: `/start`, `100`, `ဆူးလေ`.
+Same bot code lives in `netlify/functions/telegram.js`. Create a Netlify
+site from this repo, set env var `TELEGRAM_BOT_TOKEN`, deploy, then set
+the webhook to `https://<site>.netlify.app/.netlify/functions/telegram`.
+`netlify/functions/setup-webhook.js` is a one-time helper for that —
+delete it once the webhook is confirmed on either host.
 
 ## Test locally (no token needed)
 
